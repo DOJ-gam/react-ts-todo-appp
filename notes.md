@@ -184,3 +184,17 @@ interface Developer extends Employee {
 ```ts
 class manager extends Employee {}
 ```
+
+# React & Typescript
+
+- To define the type of a jsx component(React Functional Component), we use the **REACT.FC** for _React Functional Component_
+
+```ts
+import React from "react";
+const App: React.FC = () => {
+  return <div className="App">hello world</div>;
+};
+export default App;
+```
+
+- Also we can use the **React.ReeactNode** as a general type, because it supports a lot of the diffrent React Types.
