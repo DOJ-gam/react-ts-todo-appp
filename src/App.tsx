@@ -1,86 +1,71 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
+import InputField from "./components/InputField";
+import TodoList from "./components/TodoList";
+import { Todo } from "./model";
+import { DragDropContext, DropResult } from "react-beautiful-dnd";
 
-function App() {
-  let name: string; //string type
-  let age: number; //number type
-  let isStudent: boolean; // boolean type
-  let hobbies: string[]; // array of strings
-  let marks: number[]; // array of numbers
-  let role: [number, string]; // turple type(It contains a fixed amount of characters), eg, 1 number, 1 string
+const App: React.FC = () => {
+  const [todo, setTodo] = useState<string>("");
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [completedTodos, setCompletedTodos] = useState<Todo[]>([]);
 
-  name = "Daddy Omar Jeng";
-  age = 25;
-  isStudent = true;
-  hobbies = ["Programming", "Playing Game"];
-  marks = [90, 100, 95, 96];
-  role = [1, "Administrator"];
+  const handleAdd = (e: React.FormEvent) => {
+    e.preventDefault();
 
-  let person: Object; // Object type:=> not the recomended way because an object might have diffrent properties inside of it, like: name, age, etc... but how do we know that this object is expecting those propertiies? We will use the type keyword or interface keyword
-
-  person = { name: "John", age: 20, role: 111 };
-
-  // its always good practice to start types withcapital letters
-  type Student = {
-    name: string;
-    age: number;
+    if (todo) {
+      setTodos([...todos, { id: Date.now(), todo, isDone: false }]);
+      setTodo("");
+    }
   };
 
-  let student: Student;
-  student = { name: "John", age: 20 };
+  const onDragEnd = (result: DropResult) => {
+    // console.log(result);
+    const { source, destination } = result;
+    if (!destination) return;
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    )
+      return;
 
-  // In the above, both name and age will be required or else typescript will complain,
-  // To make a particular property optional we add a question mark between it and the semicolon:
-  type Student2 = {
-    name: string;
-    age?: number; //age is optional
+    let add,
+      active = todos,
+      complete = completedTodos;
+
+    // source
+    if (source.droppableId === "TodosList") {
+      add = active[source.index];
+      active.splice(source.index, 1); //1 is for the num o elements to be removed from that index
+    } else {
+      add = complete[source.index];
+      complete.splice(source.index, 1);
+    }
+
+    // Destination
+    if (destination.droppableId === "TodosList") {
+      active.splice(destination.index, 0, add);
+    } else {
+      complete.splice(destination.index, 0, add);
+    }
+
+    setCompletedTodos(complete);
+    setTodos(active);
   };
-
-  let student2: Student2;
-
-  student2 = { name: "John" };
-
-  // Array of Objects(eg Array of Person objects)
-  let students: Student[]; // Array of students
-  students = [
-    { name: "John", age: 20 },
-    { name: "Amy", age: 22 },
-  ];
-
-  let phone: number | string; //union type
-  phone = "990011111";
-
-  // functions
-  function printName(name: string) {
-    console.log(name);
-  }
-  printName("DOJ");
-
-  let printStudent: (name: string, age: number) => void;
-
-  let height: any; // any type
-  height = "10cm";
-
-  let weight: unknown; // any type(unknown)
-  weight = 75;
-
-  type Contact = {
-    phone: string;
-    address: string;
-    email: string;
-  };
-
-  interface Employee extends Contact {
-    name: string;
-    age: number;
-  }
-
-  interface Developer extends Employee {
-    role: string;
-    salary: number;
-  }
-
-  return <div className="App">hello world</div>;
-}
+  return (
+    <DragDropContext onDragEnd={onDragEnd}>
+      <div className="App">
+        <span className="heading">DOJ's Todo</span>
+        <InputField todo={todo} setTodo={setTodo} handleAdd={handleAdd} />
+        <TodoList
+          todos={todos}
+          setTodos={setTodos}
+          completedTodos={completedTodos}
+          setCompletedTodos={setCompletedTodos}
+        />
+      </div>
+    </DragDropContext>
+  );
+};
 
 export default App;

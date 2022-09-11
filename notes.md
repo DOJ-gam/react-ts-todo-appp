@@ -184,3 +184,96 @@ interface Developer extends Employee {
 ```ts
 class manager extends Employee {}
 ```
+
+# React & Typescript
+
+- Now we will learn typescript with react:
+
+## React Funtions
+
+- To define the type of a jsx component(React Functional Component), we use the **REACT.FC** for _React Functional Component_
+
+```ts
+import React from "react";
+const App: React.FC = () => {
+  return <div className="App">hello world</div>;
+};
+export default App;
+```
+
+- Also we can use the **React.ReeactNode** as a general type, because it supports a lot of the diffrent React Types.
+
+## UseState Types
+
+```ts
+const [todo, setTodo] = useState<string>("");
+const [todo, setTodo] = useState<string | number>("");
+const [todo, setTodo] = useState<string[]>([]);
+// etc...
+```
+
+- Now in other to pass the useState as props, we just do it the normal React way,
+- But when receiving it, we will have to declare their types:
+
+```ts
+import InputField from "./components/InputField";
+<InputField todo={todo} setTodo={setTodo} />;
+
+// inputField.tsx
+interface Props {
+  todo: string;
+  setTodo: React.Dispatch<React.SetStateAction<string>>;
+}
+const InputField = ({ todo, setTodo }: Props) => {
+  return <input type="text" />;
+};
+```
+
+- **Note** to get the type of the setTodo we hover over the text and copy the type.
+- Also we can use a diffrent method to pass the types of our props to the component:
+
+```ts
+const InputField: React.FC<Props> = ({ todo, setTodo }) => {
+  return <input type="text" />;
+};
+```
+
+### Array of Objects in useState
+
+- Like show above we can have an array of objects in a useState, here is how we can give its type:
+
+```ts
+const [todos, setTodos] = useState<Todo[]>([]);
+```
+
+## Type of an even in form Submit
+
+- The type of the **e** in the submit is **React.FormEvent**
+- You can use google to look for types of other types.
+- Below is an example of usage
+
+```tsx
+// App.tsx
+const handleAdd = (e: React.FormEvent) => {
+  e.preventDefault();
+};
+
+// inputField.tsx
+interface Props {
+  todo: string;
+  setTodo: React.Dispatch<React.SetStateAction<string>>;
+  handleAdd: (e: React.FormEvent) => void; //
+}
+```
+
+## Type of a HTML Element(Input Element)
+
+- To get the type of a HTML element you can simply hover over the element or google to find out more.
+- Example would be the input element:
+
+```tsx
+const inputRef = useRef<HTMLInputElement>(null)
+ <input
+  ref={inputRef}
+/>
+```
